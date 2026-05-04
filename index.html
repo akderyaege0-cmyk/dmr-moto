@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DMR MOTO | Yedek Parça Dünyası</title>
+    <!-- Google Font ve İkonlar -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #e63946; --dark: #121212; --card: #1e1e1e; --text: #ffffff; }
+        body { margin: 0; font-family: 'Poppins', sans-serif; background: var(--dark); color: var(--text); }
+        
+        /* Navigasyon */
+        header { background: #000; padding: 20px; text-align: center; border-bottom: 3px solid var(--primary); sticky; top: 0; z-index: 100; }
+        header h1 { margin: 0; letter-spacing: 2px; font-size: 28px; color: var(--primary); }
+
+        .container { padding: 20px; max-width: 1200px; margin: auto; }
+        
+        /* Ürün Kartları */
+        .products { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; margin-top: 20px; }
+        .card { background: var(--card); border-radius: 15px; overflow: hidden; transition: 0.3s; border: 1px solid #333; position: relative; }
+        .card:hover { transform: translateY(-5px); border-color: var(--primary); }
+        .card img { width: 100%; height: 200px; object-fit: cover; }
+        
+        .card-body { padding: 15px; text-align: center; }
+        .price { font-size: 22px; color: var(--primary); font-weight: bold; margin: 10px 0; }
+        
+        button { 
+            background: var(--primary); border: none; padding: 12px 20px; color: white; 
+            border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.2s;
+        }
+        button:hover { background: #c1121f; }
+
+        /* Sipariş Butonu */
+        .cart-float { 
+            position: fixed; bottom: 30px; right: 30px; background: #25d366; 
+            padding: 15px 25px; border-radius: 50px; cursor: pointer; font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 10px;
+        }
+
+        /* Admin Alanı Gizleme */
+        .admin-panel { background: #1a1a1a; padding: 20px; margin-top: 50px; border-radius: 10px; border: 1px dashed #444; }
+        input { width: 100%; padding: 10px; margin-bottom: 10px; background: #222; border: 1px solid #444; color: white; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>DMR MOTO YEDEK PARÇA</h1>
+</header>
+
+<div class="container">
+    <h2 style="text-align:center;">Motosiklet Yedek Parçaları</h2>
+    <div class="products" id="productGrid">
+        <!-- Ürünler JavaScript ile buraya gelecek -->
+    </div>
+
+    <!-- Gizli Admin Paneli (Sadece şifre ile görünür yapabilirsin) -->
+    <div class="admin-panel" id="adminPanel">
+        <h3>Yeni Ürün Ekle (Yönetici)</h3>
+        <p><small>Not: Buradan eklenenler geçicidir. Kalıcı olması için kodu güncellemelisiniz.</small></p>
+        <input id="newAd" placeholder="Ürün Adı">
+        <input id="newFiyat" placeholder="Fiyat (Örn: 1500)">
+        <input id="newImg" placeholder="Resim URL (Link)">
+        <button onclick="adminUrunEkle()">Listeye Ekle</button>
+    </div>
+</div>
+
+<div class="cart-float" onclick="siparisTamamla()">
+    <span>🛒 Sepetim (<span id="cartCount">0</span>)</span>
+</div>
+
+<script>
+    // HERKESİN GÖRECEĞİ ÜRÜNLERİ BURAYA EKLE
+    let urunler = [
+        { ad: "CG 150cc Silindir Seti", fiyat: 1250, img: "https://images.unsplash.com/photo-1558981403-c5f91db9c08b?q=80&w=400" },
+        { ad: "Performans Egzoz", fiyat: 2100, img: "https://images.unsplash.com/photo-1611317546394-63c8308db28a?q=80&w=400" },
+        { ad: "CG Arka Amortisör Takımı", fiyat: 850, img: "https://images.unsplash.com/photo-1485965120184-e220f721d03e?q=80&w=400" }
+    ];
+
+    let sepet = [];
+
+    function listele() {
+        const grid = document.getElementById("productGrid");
+        grid.innerHTML = "";
+        urunler.forEach((u, i) => {
+            grid.innerHTML += `
+                <div class="card">
+                    <img src="${u.img}" alt="${u.ad}">
+                    <div class="card-body">
+                        <h3>${u.ad}</h3>
+                        <div class="price">₺${u.fiyat}</div>
+                        <button onclick="sepeteEkle(${i})">SEPETE EKLE</button>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    function sepeteEkle(i) {
+        sepet.push(urunler[i]);
+        document.getElementById("cartCount").innerText = sepet.length;
+        alert(urunler[i].ad + " sepete eklendi!");
+    }
+
+    function siparisTamamla() {
+        if(sepet.length === 0) { alert("Sepetiniz boş!"); return; }
+        
+        let mesaj = "Merhaba DMR MOTO, şu ürünleri sipariş vermek istiyorum:\n\n";
+        let toplam = 0;
+        sepet.forEach(u => {
+            mesaj += "- " + u.ad + " (₺" + u.fiyat + ")\n";
+            toplam += parseFloat(u.fiyat);
+        });
+        mesaj += "\nToplam Tutar: ₺" + toplam;
+        
+        // Kendi WhatsApp numaranı buraya yaz (905xxxxxxxxx formatında)
+        let whatsappNo = "905XXXXXXXXX"; 
+        let link = "https://wa.me/" + whatsappNo + "?text=" + encodeURIComponent(mesaj);
+        window.open(link);
+    }
+
+    function adminUrunEkle() {
+        let sifre = prompt("Admin Şifresi:");
+        if(sifre !== "dmr2026") { alert("Hatalı şifre!"); return; }
+
+        let ad = document.getElementById("newAd").value;
+        let fiyat = document.getElementById("newFiyat").value;
+        let img = document.getElementById("newImg").value;
+
+        if(ad && fiyat && img) {
+            urunler.push({ad, fiyat, img});
+            listele();
+            alert("Ürün eklendi! Kalıcı olması için bu veriyi koddaki 'urunler' listesine de yazmalısın.");
+        }
+    }
+
+    listele();
+</script>
+
+</body>
+</html>
